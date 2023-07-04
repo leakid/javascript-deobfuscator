@@ -22,11 +22,13 @@ if (!fs.existsSync(options.input)) {
 const source = fs.readFileSync(options.input).toString();
 const config = {
     verbose: true,
+    constantRemover: !true,
     unpacker: {
         unpackArrays: true,
         unpackObjects: true,
         shouldRemove: !true,
     },
+    replaceCacheFunctions: true,
     proxyFunctions: {
         replaceProxyFunctions: true,
         removeProxyFunctions: true,

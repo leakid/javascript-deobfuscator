@@ -15,7 +15,9 @@ export default class ProxyRemover extends Modification {
         'BinaryExpression',
         'UnaryExpression',
         'ComputedMemberExpression',
-        'IdentifierExpression'
+        'IdentifierExpression',
+        // 'ArrayExpression',
+        // 'StaticMemberExpression'
     ]);
     private shouldRemoveProxyFunctions: boolean;
     private globalScope: Scope;

@@ -1,5 +1,6 @@
 export default interface Config {
     verbose: boolean;
+    replaceCacheFunctions: boolean;
     unpacker: UnpackerConfig;
     proxyFunctions: ProxyFunctionsConfig;
     expressions: ExpressionsConfig;

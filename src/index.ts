@@ -2,6 +2,7 @@ import parseScript from 'shift-parser';
 import * as Shift from 'shift-ast';
 import { codeGen, FormattedCodeGen } from 'shift-codegen';
 import Modification from './modification';
+import CacheRemover from './modifications/caches/cacheRemover';
 import ProxyRemover from './modifications/proxies/proxyRemover';
 import ExpressionSimplifier from './modifications/expressions/expressionSimplifier';
 import Unpacker from './modifications/unpacker/unpacker';
@@ -19,6 +20,7 @@ const defaultConfig: Config = {
         unpackObjects: false,
         shouldRemove: true,
     },
+    replaceCacheFunctions: true,
     proxyFunctions: {
         replaceProxyFunctions: true,
         removeProxyFunctions: true,
@@ -46,6 +48,10 @@ export function deobfuscate(source: string, config: Config = defaultConfig): str
 
     // function execution should always be checked for
     modifications.push(new FunctionExecutor(ast));
+
+    if (config.replaceCacheFunctions) {
+        modifications.push(new CacheRemover(ast));
+    }
 
     if (config.proxyFunctions.replaceProxyFunctions) {
         modifications.push(new ProxyRemover(ast, config.proxyFunctions.removeProxyFunctions));
