@@ -33,6 +33,7 @@ export default class FunctionExecutor extends Modification {
             this.replaceFunctionCalls();
         }
         this.removeFunctions();
+        this.flattenReturnStatement();
     }
 
     /**
@@ -213,5 +214,40 @@ export default class FunctionExecutor extends Modification {
             node.init != null &&
             node.init.type == 'IdentifierExpression'
         );
+    }
+
+    private listCommaExpression(node: Shift.BinaryExpression): Shift.Expression[] {
+        const commaExpression = [] as Shift.Expression[];
+        traverse(node, {
+            enter(node: Shift.Node) {
+                if (!(node.type == "BinaryExpression" && node.operator == ','))
+                    return this.skip();
+                commaExpression.push(node.right);
+                if (!(node.left.type == "BinaryExpression" && node.left.operator == ',')) {
+                    commaExpression.push(node.left);
+                    this.skip();
+                }
+            }
+        });
+        return commaExpression.reverse();
+    }
+
+    private flattenReturnStatement() {
+        const self = this;
+        traverse(this.ast, {
+            enter(node: Shift.Node, parent: Shift.Node) {
+                if (
+                    node.type == 'ReturnStatement' &&
+                    node.expression?.type == "BinaryExpression" &&
+                    node.expression.operator == ','
+                ) {
+                    const commaExpression = self.listCommaExpression(node.expression)
+                    TraversalHelper.insertNode(parent, node,
+                        commaExpression.slice(0, -1).map(expression => new Shift.ExpressionStatement({expression}))
+                    );
+                    TraversalHelper.replaceNode(parent, node.expression, commaExpression[commaExpression.length -1]);
+                }
+            }
+        });
     }
 }
