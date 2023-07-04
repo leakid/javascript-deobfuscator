@@ -40,6 +40,36 @@ console.log('Hello' + ' ' + 'World' + 'Name', null);
 
 <br/>
 
+### Cache Functions
+
+#### An example with simple cache functions for other functions
+
+Before
+
+```javascript
+function _0x47ce(_0x581b81, _0x59a040) {
+    var _0x49f94a = ["2", "3", "4"];
+    return _0x47ce = function (_0x47ce1b, _0x1b6bdb) {
+        _0x47ce1b = _0x47ce1b - 2;
+        var _0x57e195 = _0x49f94a[_0x47ce1b];
+        return _0x57e195;
+    }, _0x47ce(_0x581b81, _0x59a040);
+}
+
+const result = _0x47ce(2); // "2"
+```
+
+After
+
+```javascript
+var _0x49f94a = ["2", "3", "4"];
+var _0x47ce = function (_0x47ce1b, _0x1b6bdb) {
+    _0x47ce1b = _0x47ce1b - 2;
+    return _0x49f94a[_0x47ce1b];
+};
+const result = _0x47ce(2);
+```
+
 ### Proxy Functions
 
 #### An example with simple proxy functions for other functions
