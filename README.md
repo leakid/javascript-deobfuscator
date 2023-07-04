@@ -21,20 +21,21 @@ Install via `npm install js-deobfuscator`
 
 See bottom for more complicated example with features chained together.
 
-### Array Unpacking
+### Unpacking
 
 Before
 
 ```javascript
 const a = ['\x20', '\x57\x6f\x72\x6c\x64', '\x48\x65\x6c\x6c\x6f'];
+var obj = {a: 'Name', 'null': null};
 
-console.log(a[2] + a[0] + a[1]);
+console.log(a[2] + a[0] + a[1] + obj.a, obj.null);
 ```
 
 After
 
 ```javascript
-console.log('Hello' + ' ' + 'World');
+console.log('Hello' + ' ' + 'World' + 'Name', null);
 ```
 
 <br/>

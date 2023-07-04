@@ -1,10 +1,11 @@
 import * as Shift from 'shift-ast';
+import { SpreadElement } from 'shift-ast';
 
-export default class Array {
+export default class RArray {
     node: Shift.Node;
     parentNode: Shift.Node;
     name: string;
-    elements: Shift.Expression[];
+    elements: (Shift.Expression | SpreadElement | null)[];
     replaceCount: number;
 
     /**
@@ -18,7 +19,7 @@ export default class Array {
         node: Shift.Node,
         parentNode: Shift.Node,
         name: string,
-        elements: Shift.Expression[]
+        elements: (Shift.Expression | SpreadElement | null)[]
     ) {
         this.name = name;
         this.elements = elements;

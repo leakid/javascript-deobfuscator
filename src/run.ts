@@ -22,23 +22,24 @@ if (!fs.existsSync(options.input)) {
 const source = fs.readFileSync(options.input).toString();
 const config = {
     verbose: true,
-    arrays: {
+    unpacker: {
         unpackArrays: true,
-        removeArrays: true
+        unpackObjects: true,
+        shouldRemove: !true,
     },
     proxyFunctions: {
         replaceProxyFunctions: true,
-        removeProxyFunctions: true
+        removeProxyFunctions: true,
     },
     expressions: {
         simplifyExpressions: true,
-        removeDeadBranches: true
+        removeDeadBranches: true,
     },
     miscellaneous: {
         beautify: true,
         simplifyProperties: true,
-        renameHexIdentifiers: true
-    }
+        renameHexIdentifiers: false,
+    },
 };
 
 const output = deobfuscate(source, config);

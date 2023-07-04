@@ -1,14 +1,15 @@
 export default interface Config {
     verbose: boolean;
-    arrays: ArraysConfig;
+    unpacker: UnpackerConfig;
     proxyFunctions: ProxyFunctionsConfig;
     expressions: ExpressionsConfig;
     miscellaneous: MiscellaneousConfig;
 }
 
-interface ArraysConfig {
+export interface UnpackerConfig {
     unpackArrays: boolean;
-    removeArrays: boolean;
+    unpackObjects: boolean;
+    shouldRemove: boolean;
 }
 
 interface ProxyFunctionsConfig {

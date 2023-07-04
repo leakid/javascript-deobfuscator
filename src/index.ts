@@ -4,7 +4,7 @@ import { codeGen, FormattedCodeGen } from 'shift-codegen';
 import Modification from './modification';
 import ProxyRemover from './modifications/proxies/proxyRemover';
 import ExpressionSimplifier from './modifications/expressions/expressionSimplifier';
-import ArrayUnpacker from './modifications/arrays/arrayUnpacker';
+import Unpacker from './modifications/unpacker/unpacker';
 import PropertySimplifier from './modifications/properties/propertySimplifier';
 import CleanupHelper from './helpers/cleanupHelper';
 import Config from './config';
@@ -14,23 +14,24 @@ import DeadBranchRemover from './modifications/branches/deadBranchRemover';
 
 const defaultConfig: Config = {
     verbose: false,
-    arrays: {
+    unpacker: {
         unpackArrays: true,
-        removeArrays: true
+        unpackObjects: false,
+        shouldRemove: true,
     },
     proxyFunctions: {
         replaceProxyFunctions: true,
-        removeProxyFunctions: true
+        removeProxyFunctions: true,
     },
     expressions: {
         simplifyExpressions: true,
-        removeDeadBranches: true
+        removeDeadBranches: true,
     },
     miscellaneous: {
         beautify: true,
         simplifyProperties: true,
-        renameHexIdentifiers: false
-    }
+        renameHexIdentifiers: false,
+    },
 };
 
 /**
@@ -54,8 +55,8 @@ export function deobfuscate(source: string, config: Config = defaultConfig): str
         modifications.push(new ExpressionSimplifier(ast));
     }
 
-    if (config.arrays.unpackArrays) {
-        modifications.push(new ArrayUnpacker(ast, config.arrays.removeArrays));
+    if (config.unpacker.unpackArrays || config.unpacker.unpackObjects) {
+        modifications.push(new Unpacker(ast, config.unpacker));
     }
 
     // simplify any expressions that were revealed by the array unpacking
