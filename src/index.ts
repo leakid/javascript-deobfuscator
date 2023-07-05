@@ -5,7 +5,7 @@ import Modification from './modification';
 import CacheRemover from './modifications/caches/cacheRemover';
 import ProxyRemover from './modifications/proxies/proxyRemover';
 import ExpressionSimplifier from './modifications/expressions/expressionSimplifier';
-import Unpacker from './modifications/unpacker/unpacker';
+import ConstantUnpacker from './modifications/unpacker/constantUnpacker';
 import PropertySimplifier from './modifications/properties/propertySimplifier';
 import CleanupHelper from './helpers/cleanupHelper';
 import Config from './config';
@@ -18,6 +18,7 @@ const defaultConfig: Config = {
     unpacker: {
         unpackArrays: true,
         unpackObjects: false,
+        unpackValues: false,
         shouldRemove: true,
     },
     replaceCacheFunctions: true,
@@ -62,7 +63,7 @@ export function deobfuscate(source: string, config: Config = defaultConfig): str
     }
 
     if (config.unpacker.unpackArrays || config.unpacker.unpackObjects) {
-        modifications.push(new Unpacker(ast, config.unpacker));
+        modifications.push(new ConstantUnpacker(ast, config.unpacker));
     }
 
     // simplify any expressions that were revealed by the array unpacking

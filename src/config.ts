@@ -10,6 +10,7 @@ export default interface Config {
 export interface UnpackerConfig {
     unpackArrays: boolean;
     unpackObjects: boolean;
+    unpackValues: boolean;
     shouldRemove: boolean;
 }
 

@@ -1,13 +1,12 @@
 import * as Shift from 'shift-ast';
-import RArray from './array';
-import RObject from './object';
+import Constant from './constant';
+import TraversalHelper from '../../helpers/traversalHelper';
 
 export default class Scope {
     node: Shift.Node;
     parent?: Scope;
     children: Map<Shift.Node, Scope>;
-    objects: Map<string, RObject>;
-    arrays: Map<string, RArray>;
+    mapping: Map<string, Constant<any>>;
 
     /**
      * Creates a new scope.
@@ -18,8 +17,7 @@ export default class Scope {
         this.node = node;
         this.parent = parent;
         this.children = new Map<Shift.Node, Scope>();
-        this.objects = new Map<string, RObject>();
-        this.arrays = new Map<string, RArray>();
+        this.mapping = new Map<string, Constant<any>>();
 
         if (this.parent) {
             this.parent.children.set(this.node, this);
@@ -27,43 +25,49 @@ export default class Scope {
     }
 
     /**
-     * Searches for an array by name.
+     * Adds a constant.
+     * @param constant The constant to be added.
+     */
+    addVariable(constant: Constant<any>): void {
+        this.addAlias(constant, constant.name);
+    }
+
+    /**
+     * Searches for an variable by name.
      * @param name The name of the array.
      */
-    findArray(name: string): RArray | null {
-        if (this.arrays.has(name)) {
-            return this.arrays.get(name) as RArray;
+    findVariable<T>(name: string): Constant<T> | null {
+        if (this.mapping.has(name)) {
+            return this.mapping.get(name) as Constant<T>;
         }
 
-        return this.parent ? this.parent.findArray(name) : null;
+        return this.parent ? this.parent.findVariable(name) : null;
     }
 
     /**
-     * Searches for an object by name.
-     * @param name The name of the object.
+     * Adds an alias for a constant.
+     * @param constant The constant to be added.
+     * @param name The alias.
      */
-    findObject(name: string): RObject | null {
-        // console.log(this.objects)
-        if (this.objects.has(name)) {
-            return this.objects.get(name) as RObject;
+    addAlias(constant: Constant<any>, name: string): void {
+        if (this.mapping.has(constant.name)) {
+            throw new Error(`this ${constant.ID} are alredy mapped ${constant.name}`)
+        }
+        this.mapping.set(name, constant);
+    }
+
+    /**
+     * Removes all the (suitable) constant in this scope and its children.
+     */
+    removeVariableDeclaration(): void {
+        for (const [_, constant] of this.mapping) {
+            if (constant.overrideCount == 0) {
+                TraversalHelper.removeNode(constant.parentNode, constant.node);
+            }
         }
 
-        return this.parent ? this.parent.findObject(name) : null;
-    }
-
-    /**
-     * Adds an array.
-     * @param array The array to be added.
-     */
-    addArray(array: RArray): void {
-        this.arrays.set(array.name, array);
-    }
-
-    /**
-     * Adds an ObjectArray.
-     * @param object The object to be added.
-     */
-    addObject(object: RObject): void {
-        this.objects.set(object.name, object);
+        for (const [_, child] of this.children) {
+            child.removeVariableDeclaration();
+        }
     }
 }
