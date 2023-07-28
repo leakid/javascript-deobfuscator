@@ -5,7 +5,7 @@ import RArray from './array';
 import RObject from './object';
 import Scope from './scope';
 import type { UnpackerConfig } from '../../config';
-import Constant from './constant';
+import Constant, { NODES_MAP } from './constant';
 import RValue from './value';
 
 export default class ConstantUnpacker extends Modification {
@@ -43,6 +43,8 @@ export default class ConstantUnpacker extends Modification {
         if (this.config.shouldRemove) {
             this.globalScope.removeVariableDeclaration();
         }
+        for (const id in NODES_MAP)
+            delete NODES_MAP[id];
     }
 
     /**

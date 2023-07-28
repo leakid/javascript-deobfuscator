@@ -2,7 +2,7 @@ import * as Shift from 'shift-ast';
 import Scope from './scope';
 import TraversalHelper from '../../helpers/traversalHelper';
 
-const NODES_MAP = {} as Record<string, Set<Shift.Node>>
+export const NODES_MAP = {} as Record<string, Set<Shift.Node>>
 
 export default class Constant<T> {
     readonly ID: string = '';
@@ -62,7 +62,9 @@ export default class Constant<T> {
         return;
     }
     replaceSimpleAccess(node: Shift.Node, parent: Shift.Node, scope: Scope, name?: string, metadata?: any) {
-        const constant = scope.findVariable(name || '') as Constant<T>;
+        // /!\ must call super.replaceSimpleAccess if IdentifierExpression match
+        // to increment the overrideCount
+        const constant = scope.findVariable(name ?? '') as Constant<T>;
         if (!constant)
             return;
 

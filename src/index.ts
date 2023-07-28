@@ -14,11 +14,11 @@ import FunctionExecutor from './modifications/execution/functionExecutor';
 import DeadBranchRemover from './modifications/branches/deadBranchRemover';
 
 const defaultConfig: Config = {
-    verbose: false,
+    verbose: !false,
     unpacker: {
         unpackArrays: true,
-        unpackObjects: false,
-        unpackValues: false,
+        unpackObjects: true,
+        unpackValues: true,
         shouldRemove: true,
     },
     replaceCacheFunctions: true,
@@ -58,17 +58,19 @@ export function deobfuscate(source: string, config: Config = defaultConfig): str
         modifications.push(new ProxyRemover(ast, config.proxyFunctions.removeProxyFunctions));
     }
 
-    if (config.expressions.simplifyExpressions) {
-        modifications.push(new ExpressionSimplifier(ast));
-    }
+    const to_unpacker = Object.entries(config.unpacker)
+        .some(([key, value]) => key.startsWith('unpack') && value);
 
-    if (config.unpacker.unpackArrays || config.unpacker.unpackObjects) {
-        modifications.push(new ConstantUnpacker(ast, config.unpacker));
-    }
+    let repeat = [config.expressions.simplifyExpressions, to_unpacker].filter(Boolean).length
 
     // simplify any expressions that were revealed by the array unpacking
-    if (config.expressions.simplifyExpressions) {
-        modifications.push(new ExpressionSimplifier(ast));
+    while (repeat --) {
+        if (config.expressions.simplifyExpressions) {
+            modifications.push(new ExpressionSimplifier(ast));
+        }
+        if (to_unpacker) {
+            modifications.push(new ConstantUnpacker(ast, config.unpacker));
+        }
     }
 
     if (config.expressions.removeDeadBranches) {

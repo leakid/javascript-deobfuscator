@@ -3,6 +3,10 @@ import Constant from './constant';
 import Scope from './scope';
 import type { LiteralExpression } from '../../helpers/types';
 
+const excludeIdentifier = new Set([
+    'ComputedMemberExpression', 'StaticMemberExpression'
+]);
+
 export default class RValue extends Constant<LiteralExpression>{
     readonly ID = 'value';
 
@@ -26,7 +30,8 @@ export default class RValue extends Constant<LiteralExpression>{
 
     replaceSimpleAccess(node: Shift.Node, parent: Shift.Node, scope: Scope, name?: string, metadata?: any) {
         if (
-            node.type == 'IdentifierExpression'
+            node.type == 'IdentifierExpression' &&
+            !excludeIdentifier.has(parent.type)
         ) {
             super.replaceSimpleAccess(node, parent, scope, node.name, node);
         }

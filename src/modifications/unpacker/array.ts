@@ -20,8 +20,10 @@ export default class RArray extends Constant<(Shift.Expression | Shift.SpreadEle
         return false;
     }
 
-    getReplacement(metadata: any): Shift.Expression | undefined {
-        const replacement = this.elements[metadata];
+    getReplacement(metadata: Shift.Expression): Shift.Expression | undefined {
+        if (metadata.type != 'LiteralNumericExpression')
+            return;
+        const replacement = this.elements[metadata.value];
         if (!replacement || replacement.type == 'SpreadElement')
             return;
         return replacement;
@@ -30,10 +32,9 @@ export default class RArray extends Constant<(Shift.Expression | Shift.SpreadEle
     replaceSimpleAccess(node: Shift.Node, parent: Shift.Node, scope: Scope, name?: string, metadata?: any) {
         if (
             node.type == 'ComputedMemberExpression' &&
-            node.object.type == 'IdentifierExpression' &&
-            node.expression.type == 'LiteralNumericExpression'
+            node.object.type == 'IdentifierExpression'
         ) {
-            super.replaceSimpleAccess(node, parent, scope, node.object.name, node.expression.value);
+            super.replaceSimpleAccess(node, parent, scope, node.object.name, node.expression);
         }
     }
 }

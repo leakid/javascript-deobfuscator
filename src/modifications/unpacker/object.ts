@@ -19,26 +19,26 @@ export default class RObject extends Constant<Shift.ObjectExpression>{
         return false;
     }
 
-    getReplacement(metadata: any): Shift.Expression | undefined {
+    getReplacement(metadata: string|Shift.Expression): Shift.Expression | undefined {
+        if (typeof metadata != "string" && metadata.type == 'LiteralStringExpression')
+            metadata = metadata.value;
+
         const replacement = this.elements.properties.find(e =>
             e && e.type == 'DataProperty' && e.name.type == 'StaticPropertyName' && e.name.value == metadata
         ) as Shift.DataProperty | undefined;
 
-        if (metadata == 'b')
-            console.log(replacement?.expression)
         if (replacement?.expression?.type?.startsWith('Literal')) {
             return replacement.expression;
         }
     }
 
     replaceSimpleAccess(node: Shift.Node, parent: Shift.Node, scope: Scope, name?: string, metadata?: any) {
-        let index: string;
+        let index: string|Shift.Expression;
         if (
             node.type == 'ComputedMemberExpression' &&
-            node.object.type == 'IdentifierExpression' &&
-            node.expression.type == 'LiteralStringExpression'
+            node.object.type == 'IdentifierExpression'
         ) {
-            index = node.expression.value;
+            index = node.expression;
         } else if (
             node.type == 'StaticMemberExpression' &&
             node.object.type == 'IdentifierExpression'

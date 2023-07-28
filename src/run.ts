@@ -26,7 +26,7 @@ const config = {
         unpackArrays: true,
         unpackObjects: true,
         unpackValues: true,
-        shouldRemove: !true,
+        shouldRemove: true,
     },
     replaceCacheFunctions: true,
     proxyFunctions: {
@@ -44,6 +44,6 @@ const config = {
     },
 };
 
-const output = deobfuscate(source, config);
+const output = deobfuscate(source/*, config*/);
 fs.writeFileSync(options.output, output);
 console.info(`The output file ${options.output} has been created`);
